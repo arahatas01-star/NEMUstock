@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STCK-V1 - Kalkulator & Analisis Saham</title>
+    <title>Multibagger Stock Analyzer (Manual Mode)</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: #f0f2f5; margin: 0; padding: 15px; color: #1c1e21; }
@@ -25,13 +25,18 @@
         .valuation-box { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 13px; }
         .layak { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
         .tidak-layak { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .high { background-color: #198754; }
+        .medium { background-color: #ffc107; color: #000; }
+        .low { background-color: #dc3545; }
+        .analysis-list { font-size: 12px; margin-top: 10px; padding-left: 20px; text-align: left; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📈 Kalkulator Valuasi & Multibagger Saham</h1>
-    <p class="sub">Kalkulator Harga Wajar Benjamin Graham & Evaluasi Katalis (IHSG / US)</p>
+    <h1>📊 Multibagger & Valuation Analyzer</h1>
+    <p class="sub">Kalkulator Valuasi Graham & Indikator Katalis (Input Manual)</p>
 
     <div class="row">
         <div class="col form-group">
@@ -49,31 +54,48 @@
 
     <div class="row">
         <div class="col form-group">
-            <label>Harga Saham Saat Ini</label>
-            <input type="number" id="hargaInput" placeholder="Contoh: 10250">
+            <label>Harga Saat Ini</label>
+            <input type="number" id="hargaInput" placeholder="Harga Saham">
         </div>
         <div class="col form-group">
-            <label>EPS (Laba per Saham TTM)</label>
-            <input type="number" id="epsInput" placeholder="Contoh: 410">
+            <label>EPS (Laba/Saham)</label>
+            <input type="number" id="epsInput" placeholder="EPS TTM">
         </div>
     </div>
 
     <div class="row">
         <div class="col form-group">
-            <label>BVPS (Nilai Buku per Saham)</label>
-            <input type="number" id="bvpsInput" placeholder="Contoh: 2800">
+            <label>BVPS (Nilai Buku/Saham)</label>
+            <input type="number" id="bvpsInput" placeholder="BVPS">
         </div>
         <div class="col form-group">
-            <label>Aksi Korporasi / Katalis</label>
-            <select id="katalisSelect">
-                <option value="normal">Organik Biasa</option>
-                <option value="expansion">Right Issue / Ekspansi Capex</option>
-                <option value="turnaround">Turnaround / Backdoor Listing / Spinoff</option>
-            </select>
+            <label>Pertumbuhan Laba (%)</label>
+            <input type="number" id="profitGrowth" placeholder="Contoh: 35">
         </div>
     </div>
 
-    <button onclick="hitungValuasi()">🔍 Hitung Analisis Saham</button>
+    <hr style="border:0; border-top: 1px solid #eee; margin: 15px 0;">
+
+    <div class="form-group">
+        <label>Aksi Korporasi (Right Issue / Dilusi)</label>
+        <select id="rightIssue">
+            <option value="none">Tidak ada Right Issue / Issuance</option>
+            <option value="expansion">Right Issue untuk Ekspansi / Modal Kerja</option>
+            <option value="backdoor">Backdoor Listing / Standby Buyer Baru / SPAC</option>
+            <option value="debt">Right Issue untuk Bayar Utang (Risiko Dilusi)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Indikator Akuisisi / M&A / Spinoff</label>
+        <select id="acquisition">
+            <option value="none">Tidak ada Akuisisi / Spinoff</option>
+            <option value="small">Akuisisi Aset Skala Kecil/Menengah</option>
+            <option value="transformative">Akuisisi Strategis Transformatif (Turnaround)</option>
+        </select>
+    </div>
+
+    <button onclick="prosesAnalisis()">🔍 Hitung Valuasi & Potensi Multibagger</button>
 
     <div id="hasil" class="result-box">
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -89,30 +111,84 @@
         </div>
 
         <div id="statusKelayakan" class="valuation-box"></div>
+        
+        <div style="margin-top: 15px;">
+            <p style="font-size: 13px; font-weight: bold; margin-bottom: 5px;">Poin Evaluasi Katalis Multibagger:</p>
+            <ul class="analysis-list" id="analysisNotes"></ul>
+        </div>
     </div>
 </div>
 
 <script>
-    function hitungValuasi() {
+    function prosesAnalisis() {
         const ticker = document.getElementById('tickerInput').value.trim().toUpperCase() || 'SAHAM';
         const mataUangSymbol = document.getElementById('pasarSelect').value === 'IDR' ? 'Rp ' : '$ ';
         const harga = parseFloat(document.getElementById('hargaInput').value);
         const eps = parseFloat(document.getElementById('epsInput').value);
         const bvps = parseFloat(document.getElementById('bvpsInput').value);
-        const katalis = document.getElementById('katalisSelect').value;
+        const profitGrowth = parseFloat(document.getElementById('profitGrowth').value) || 0;
+        const rightIssue = document.getElementById('rightIssue').value;
+        const acquisition = document.getElementById('acquisition').value;
 
         if (!harga || !eps || !bvps || harga <= 0 || eps <= 0 || bvps <= 0) {
-            alert('Harap isi Harga Saham, EPS, dan BVPS dengan angka positif!');
+            alert('Harap masukkan Harga Saham, EPS, dan BVPS dengan angka positif!');
             return;
         }
 
-        // Formula Benjamin Graham: V = sqrt(22.5 * EPS * BVPS)
+        // 1. Kalkulasi Valuasi Graham
         const hargaWajar = Math.sqrt(22.5 * eps * bvps);
         const mos = ((hargaWajar - harga) / hargaWajar) * 100;
         const per = (harga / eps).toFixed(1);
         const pbv = (harga / bvps).toFixed(1);
         const roe = ((eps / bvps) * 100).toFixed(1);
 
+        // 2. Skoring Indikator Multibagger (Ala Andry Hakim)
+        let score = 0;
+        let notes = [];
+
+        if (mos >= 20) {
+            score += 20;
+            notes.push("Valuasi sangat murah (Margin of Safety tebal > 20%).");
+        } else if (mos > 0) {
+            score += 10;
+            notes.push("Valuasi berada di bawah harga wajar (Undervalued).");
+        } else {
+            notes.push("Valuasi sudah tergolong mahal (Overvalued dibanding Graham Value).");
+        }
+
+        if (profitGrowth >= 50) {
+            score += 30;
+            notes.push(`Pertumbuhan laba sangat masif (${profitGrowth}%), mengindikasikan Hyper Growth.`);
+        } else if (profitGrowth >= 20) {
+            score += 20;
+            notes.push(`Pertumbuhan laba tergolong sehat (${profitGrowth}%).`);
+        } else if (profitGrowth > 0) {
+            score += 5;
+            notes.push(`Laba tumbuh lambat (${profitGrowth}%).`);
+        } else {
+            notes.push("Laba stagnan atau negatif.");
+        }
+
+        if (rightIssue === 'backdoor') {
+            score += 30;
+            notes.push("Katalis Sangat Kuat: Right Issue Backdoor Listing / Masuknya Investor Strategis Baru.");
+        } else if (rightIssue === 'expansion') {
+            score += 15;
+            notes.push("Katalis Positif: Right Issue digunakan untuk ekspansi bisnis.");
+        } else if (rightIssue === 'debt') {
+            score -= 10;
+            notes.push("Risiko Dilusi: Right Issue hanya untuk bayar utang.");
+        }
+
+        if (acquisition === 'transformative') {
+            score += 20;
+            notes.push("Katalis Transformatif: Akuisisi strategis yang berpotensi melipatgandakan omzet.");
+        } else if (acquisition === 'small') {
+            score += 10;
+            notes.push("Akuisisi skala kecil memberikan pertumbuhan anorganik.");
+        }
+
+        // Display Hasil
         document.getElementById('sahamTitle').innerText = ticker;
         document.getElementById('hargaText').innerText = mataUangSymbol + harga.toLocaleString('id-ID');
         document.getElementById('valGraham').innerText = mataUangSymbol + Math.round(hargaWajar).toLocaleString('id-ID');
@@ -121,21 +197,30 @@
         document.getElementById('valROE').innerText = `${roe}%`;
 
         const statusBox = document.getElementById('statusKelayakan');
-        
-        let pesanKatalis = "";
-        if (katalis === 'turnaround') {
-            pesanKatalis = "<br>🚀 <b>Potensi Multibagger: Tinggi</b> (Ada Katalis Turnaround/Spinoff/Backdoor).";
-        } else if (katalis === 'expansion') {
-            pesanKatalis = "<br>📈 <b>Potensi Multibagger: Sedang</b> (Didorong Ekspansi Modal).";
+        let badgeHtml = "";
+        if (score >= 65) {
+            badgeHtml = `<br><span class="badge high">POTENSI MULTIBAGGER TINGGI 🚀 (Skor: ${score}/100)</span>`;
+        } else if (score >= 40) {
+            badgeHtml = `<br><span class="badge medium">POTENSI SEDANG / WATCHLIST ⚠️ (Skor: ${score}/100)</span>`;
+        } else {
+            badgeHtml = `<br><span class="badge low">POTENSI LOW / RISIKO TINGGI ❌ (Skor: ${score}/100)</span>`;
         }
 
         if (mos >= 10) {
             statusBox.className = "valuation-box layak";
-            statusBox.innerHTML = `💡 <b>UNDERVALUED (DISKON)</b><br>Harga pasar (${mataUangSymbol}${harga.toLocaleString('id-ID')}) berada di bawah Harga Wajar Graham (${mataUangSymbol}${Math.round(hargaWajar).toLocaleString('id-ID')}).${pesanKatalis}`;
+            statusBox.innerHTML = `💡 <b>UNDERVALUED (DISCOUNT)</b><br>Harga pasar (${mataUangSymbol}${harga.toLocaleString('id-ID')}) berada di bawah Harga Wajar Graham (${mataUangSymbol}${Math.round(hargaWajar).toLocaleString('id-ID')}).${badgeHtml}`;
         } else {
             statusBox.className = "valuation-box tidak-layak";
-            statusBox.innerHTML = `⚠️ <b>OVERVALUED / FAIR VALUE</b><br>Harga pasar saat ini sudah mendekati atau melebihi estimasi harga wajarnya.${pesanKatalis}`;
+            statusBox.innerHTML = `⚠️ <b>OVERVALUED / FAIR VALUE</b><br>Harga pasar mendekati atau melebihi estimasi harga wajarnya.${badgeHtml}`;
         }
+
+        const analysisNotes = document.getElementById('analysisNotes');
+        analysisNotes.innerHTML = '';
+        notes.forEach(note => {
+            let li = document.createElement('li');
+            li.textContent = note;
+            analysisNotes.appendChild(li);
+        });
 
         document.getElementById('hasil').style.display = 'block';
     }
