@@ -3,228 +3,734 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multibagger Stock Analyzer (Manual Mode)</title>
+    <title>NEMU Stock - Master Investor Suite Ultimate Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f0f2f5; margin: 0; padding: 15px; color: #1c1e21; }
-        .container { max-width: 650px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h1 { text-align: center; color: #0d6efd; font-size: 20px; margin-bottom: 5px; }
-        p.sub { text-align: center; color: #6c757d; font-size: 12px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-weight: bold; font-size: 12px; margin-bottom: 4px; color: #333; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; background: #fff; }
-        .row { display: flex; gap: 10px; }
-        .col { flex: 1; }
-        button { width: 100%; padding: 12px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:hover { background-color: #0b5ed7; }
-        .result-box { display: none; margin-top: 20px; padding: 15px; border-radius: 8px; border: 1px solid #ccc; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
-        .card { background: #f8f9fa; padding: 10px; border-left: 4px solid #0d6efd; border-radius: 6px; }
-        .card h4 { margin: 0 0 4px 0; color: #6c757d; font-size: 11px; }
-        .card .value { font-size: 14px; font-weight: bold; }
-        .valuation-box { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 13px; }
-        .layak { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-        .tidak-layak { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
-        .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px; }
-        .high { background-color: #198754; }
-        .medium { background-color: #ffc107; color: #000; }
-        .low { background-color: #dc3545; }
-        .analysis-list { font-size: 12px; margin-top: 10px; padding-left: 20px; text-align: left; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --input-bg: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 15px; padding-bottom: 3rem; }
+
+        header { background-color: rgba(30, 41, 59, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); padding: 0.8rem 1rem; position: sticky; top: 0; z-index: 100; margin: -15px -15px 20px -15px; }
+        .navbar { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+        
+        /* LOGO NEMU INTEGRATED */
+        .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-svg { width: 34px; height: 34px; filter: drop-shadow(0px 2px 4px rgba(37, 99, 235, 0.4)); }
+        .logo-text { font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+        .logo-text span.brand-stock { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
+        .logo-badge { font-size: 0.75rem; color: var(--accent-green); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+        .input-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+
+        .form-title { font-size: 0.95rem; font-weight: 600; color: var(--accent-yellow); margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px; }
+        .form-group { margin-bottom: 6px; }
+        .form-group label { display: block; font-weight: 500; font-size: 12px; margin-bottom: 4px; color: var(--text-muted); }
+        .form-control { width: 100%; padding: 9px 11px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; color: var(--text-main); }
+        .form-control:focus { outline: none; border-color: var(--primary); }
+
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 6px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-main); background: var(--input-bg); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; }
+        .checkbox-item input { accent-color: var(--primary); width: 16px; height: 16px; }
+
+        .btn-analyze { width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 15px; transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-analyze:hover { background: var(--primary-dark); }
+
+        .results-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; }
+        .njop-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.88rem; }
+        
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .badge-cuan { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        .grid-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+        .metric-card { background: var(--input-bg); padding: 10px; border-left: 4px solid var(--primary); border-radius: 8px; border: 1px solid var(--border-color); }
+        .metric-card h4 { margin: 0 0 4px 0; color: var(--text-muted); font-size: 11px; font-weight: 500; }
+        .metric-card .value { font-size: 14px; font-weight: 700; color: var(--text-main); }
+
+        .decision-banner { font-size: 1.05rem; font-weight: 700; text-align: center; padding: 12px; border-radius: 8px; margin-bottom: 14px; }
+        .banner-go { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .banner-warning { background: rgba(245, 158, 11, 0.2); border: 1px solid var(--accent-yellow); color: var(--accent-yellow); }
+        .banner-nogo { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--accent-red); color: var(--accent-red); }
+
+        /* VISUALISATOR BAR ADVANCED */
+        .chart-bar-container { margin-top: 12px; background: var(--input-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .bar-group { margin-bottom: 10px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .bar-track { height: 12px; background: #334155; border-radius: 6px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .zone-indicator { font-size: 11px; font-weight: 600; text-align: right; margin-top: 6px; display: block; }
+
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-top: 14px; }
+        .btn-action { display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; text-align: center; padding: 10px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; font-size: 0.8rem; }
+        .btn-copy { background: var(--accent-yellow); color: #000; }
+        .btn-wa { background: #25D366; color: #fff; }
+        .btn-image { background: #ec4899; color: #fff; }
+        .btn-save { background: #8b5cf6; color: #fff; }
+
+        .exit-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .exit-table th, .exit-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .exit-table th { background: var(--input-bg); color: var(--text-muted); }
+
+        .analysis-list { font-size: 12px; margin-top: 8px; padding-left: 18px; text-align: left; color: var(--text-muted); line-height: 1.6; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .logo-badge span { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📊 Multibagger & Valuation Analyzer</h1>
-    <p class="sub">Kalkulator Valuasi Graham & Indikator Katalis (Input Manual)</p>
+    <header>
+        <div class="navbar">
+            <div class="logo-container">
+                <!-- LOGO NEMU VECTOR SVG -->
+                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="22" fill="#1E293B"/>
+                    <path d="M22 75V35L42 22L62 35V75" stroke="#2563EB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M42 75V52L78 28" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M62 28H78V44" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="logo-text">
+                    NEMU <span class="brand-stock">stock</span>
+                </div>
+            </div>
+            <div class="logo-badge">
+                <i class="fa-solid fa-crown"></i> <span>Master Suite Ultimate</span>
+            </div>
+        </div>
+    </header>
 
-    <div class="row">
-        <div class="col form-group">
-            <label>Pasar / Bursa</label>
-            <select id="pasarSelect">
-                <option value="IDR">Indonesia (IHSG - IDR)</option>
-                <option value="USD">Amerika Serikat (US - USD)</option>
-            </select>
+    <div class="container">
+        <div class="input-section">
+            
+            <!-- 1. Data Utama & Pasar & Sektor -->
+            <div class="form-title"><i class="fa-solid fa-sliders"></i> 1. Identitas, Sektor & Finansial Dasar</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Pasar / Bursa</label>
+                    <select id="pasarSelect" class="form-control">
+                        <option value="IDR">Indonesia (IHSG - IDR)</option>
+                        <option value="USD">Amerika Serikat (US - USD)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sektor Bisnis</label>
+                    <select id="sektorSelect" class="form-control">
+                        <option value="general">Umum / Cyclical</option>
+                        <option value="banking">Perbankan / Keuangan (Fokus PBV & ROE)</option>
+                        <option value="consumer">Consumer Goods / Retur (Fokus PER & FCF)</option>
+                        <option value="tech">Teknologi / High Growth (Fokus PEG & DCF)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kode Saham (Ticker)</label>
+                    <input type="text" id="tickerInput" class="form-control" placeholder="BBCA / AAPL">
+                </div>
+                <div class="form-group">
+                    <label>Harga Saham Saat Ini</label>
+                    <input type="number" id="hargaInput" class="form-control" placeholder="9500">
+                </div>
+                <div class="form-group">
+                    <label>EPS (Laba Bersih / Saham TTM)</label>
+                    <input type="number" id="epsInput" class="form-control" placeholder="450">
+                </div>
+                <div class="form-group">
+                    <label>BVPS (Nilai Buku / Saham)</label>
+                    <input type="number" id="bvpsInput" class="form-control" placeholder="2800">
+                </div>
+            </div>
+
+            <!-- 2. Solvensi, Cash Flow & Dividen DDM -->
+            <div class="form-title"><i class="fa-solid fa-shield-halved"></i> 2. Cash Flow, Solvensi & Modul Dividen (DDM)</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Total Aset / Saham (Asset/Share)</label>
+                    <input type="number" id="assetShareInput" class="form-control" placeholder="5000">
+                </div>
+                <div class="form-group">
+                    <label>Total Utang / Saham (Liabilities/Share)</label>
+                    <input type="number" id="debtShareInput" class="form-control" placeholder="2000">
+                </div>
+                <div class="form-group">
+                    <label>Free Cash Flow / Saham (FCFPS)</label>
+                    <input type="number" id="fcfShareInput" class="form-control" placeholder="400">
+                </div>
+                <div class="form-group">
+                    <label>Dividen per Saham (DPS)</label>
+                    <input type="number" id="dpsInput" class="form-control" placeholder="200" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Est. Pertumbuhan Laba & Div (%/Thn)</label>
+                    <input type="number" id="profitGrowth" class="form-control" placeholder="15" value="15">
+                </div>
+                <div class="form-group">
+                    <label>Modal Investasi Kamu (IDR / USD)</label>
+                    <input type="number" id="userCapital" class="form-control" placeholder="50000000" value="10000000">
+                </div>
+            </div>
+
+            <!-- 3. KALKULATOR DCA / AVERAGING DOWN MODUL -->
+            <div class="form-title"><i class="fa-solid fa-layer-group"></i> 3. Simulasi DCA / Averaging Down (Opsional)</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Harga Rata-Rata Kamu Saat Ini (Avg Price)</label>
+                    <input type="number" id="currentAvgPrice" class="form-control" placeholder="10500" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Lot / Saham Dimiliki</label>
+                    <input type="number" id="currentSharesCount" class="form-control" placeholder="50" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Target Harga Rata-Rata Baru</label>
+                    <input type="number" id="targetAvgPrice" class="form-control" placeholder="9800" value="0">
+                </div>
+            </div>
+
+            <!-- 4. Corporate Action & Katalis -->
+            <div class="form-title"><i class="fa-solid fa-rocket"></i> 4. Katalis Corporate Action & M&A</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Aksi Korporasi (Right Issue / Issuance)</label>
+                    <select id="rightIssue" class="form-control">
+                        <option value="none">Tidak ada Right Issue / Issuance</option>
+                        <option value="expansion">Right Issue untuk Ekspansi / Modal Kerja</option>
+                        <option value="backdoor">Backdoor Listing / Standby Buyer Baru / SPAC</option>
+                        <option value="debt">Right Issue untuk Bayar Utang (Risiko Dilusi)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Indikator Akuisisi / M&A / Spinoff</label>
+                    <select id="acquisition" class="form-control">
+                        <option value="none">Tidak ada Akuisisi / Spinoff</option>
+                        <option value="small">Akuisisi Aset Skala Kecil/Menengah</option>
+                        <option value="transformative">Akuisisi Strategis Transformatif (Turnaround)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 5. Red Flag & GCG Check -->
+            <div class="form-title"><i class="fa-solid fa-triangle-exclamation"></i> 5. Red Flag & Audit GCG</div>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" id="rfPiutang"> Piutang tumbuh jauh lebih cepat dari Omzet</label>
+                <label class="checkbox-item"><input type="checkbox" id="rfOpCash"> Arus Kas Operasi (CFO) Konsisten Negatif</label>
+                <label class="checkbox-item"><input type="checkbox" id="rfInsiderSelling"> Transaksi Penjualan Masif oleh Direksi/Insider</label>
+                <label class="checkbox-item"><input type="checkbox" id="flagPiotroskiProf"> Piotroski: ROE & Margin Laba Membaik (+1 Score)</label>
+                <label class="checkbox-item"><input type="checkbox" id="flagPiotroskiLev"> Piotroski: Utang Mengurang / Rasio Lancar Naik (+1 Score)</label>
+            </div>
+
+            <button class="btn-analyze" onclick="calculateStockMaster()">
+                <i class="fa-solid fa-calculator"></i> KALKULASI DEALS & COMPREHENSIVE ENGINE
+            </button>
         </div>
-        <div class="col form-group">
-            <label>Kode Saham (Ticker)</label>
-            <input type="text" id="tickerInput" placeholder="Contoh: BBCA / AAPL">
+
+        <!-- Area Hasil Analisis -->
+        <div id="resultsArea" class="results-section" style="display: none;">
+            
+            <div id="exportScorecardCard" style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                
+                <!-- Decision Banner -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <div id="decisionBanner" class="decision-banner banner-go">
+                        INVESTOR DECISION: HIGH CONVICTION DEAL
+                    </div>
+                </div>
+
+                <!-- Valuation Multi-Model -->
+                <div class="card">
+                    <h3 style="margin-bottom: 12px; font-size: 0.95rem; color: var(--accent-yellow);"><i class="fa-solid fa-chart-pie"></i> Valuation Multi-Model</h3>
+                    <div class="njop-row"><span>Harga Pasar Saat Ini:</span><strong id="resPrice">Rp 0</strong></div>
+                    <div class="njop-row"><span>Harga Wajar Graham:</span><strong id="resGraham" style="color: var(--primary);">Rp 0</strong></div>
+                    <div class="njop-row"><span>Harga Wajar DCF (5 Thn):</span><strong id="resDCF" style="color: var(--accent-green);">Rp 0</strong></div>
+                    <div class="njop-row"><span>Harga Wajar DDM (Dividen):</span><strong id="resDDM" style="color: var(--accent-yellow);">Rp 0</strong></div>
+                    <div class="njop-row"><span>Margin of Safety (Graham):</span><strong id="resMoS" style="color: var(--accent-green);">0%</strong></div>
+                    <div class="njop-row"><span>PEG Ratio / Div Yield:</span><strong id="resPEGDiv">0x / 0%</strong></div>
+
+                    <!-- Visualisator Grafis Upgrade -->
+                    <div class="chart-bar-container">
+                        <span style="font-size: 11px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 8px;"><i class="fa-solid fa-chart-simple"></i> Visualisator Komparasi Valuasi:</span>
+                        
+                        <div class="bar-group">
+                            <div class="bar-label"><span>Harga Pasar</span><span id="lblBarPrice">0</span></div>
+                            <div class="bar-track"><div id="barPrice" class="bar-fill" style="width: 0%; background: var(--accent-red);"></div></div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-label"><span>Valuasi Graham</span><span id="lblBarGraham">0</span></div>
+                            <div class="bar-track"><div id="barGraham" class="bar-fill" style="width: 0%; background: var(--primary);"></div></div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-label"><span>Valuasi DCF</span><span id="lblBarDCF">0</span></div>
+                            <div class="bar-track"><div id="barDCF" class="bar-fill" style="width: 0%; background: var(--accent-green);"></div></div>
+                        </div>
+                        <div class="bar-group" id="barDdmGroup" style="display: none;">
+                            <div class="bar-label"><span>Valuasi DDM (Dividen)</span><span id="lblBarDDM">0</span></div>
+                            <div class="bar-track"><div id="barDDM" class="bar-fill" style="width: 0%; background: var(--accent-yellow);"></div></div>
+                        </div>
+
+                        <span id="zoneIndicatorText" class="zone-indicator" style="color: var(--accent-red);">
+                            OVERVALUED ZONE ⚠️
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Financial Health & Risk -->
+                <div class="card">
+                    <h3 style="margin-bottom: 12px; font-size: 0.95rem; color: var(--accent-yellow);"><i class="fa-solid fa-heart-pulse"></i> Solvensi & Kesehatan Keuangan</h3>
+                    <div class="njop-row"><span>Sektor Fokus:</span><strong id="resSektorName">Umum</strong></div>
+                    <div class="njop-row"><span>DER (Debt to Equity):</span><strong id="resDER">0x</strong></div>
+                    <div class="njop-row"><span>Altman Z-Score:</span><span id="resAltmanBadge" class="badge">Safe Zone</span></div>
+                    <div class="njop-row"><span>Piotroski F-Score:</span><strong id="resPiotroski" style="color: var(--accent-green);">0/9</strong></div>
+                    <div class="njop-row"><span>PER / PBV / ROE:</span><strong id="resMultiRatio">0x / 0x / 0%</strong></div>
+                    <div class="njop-row"><span>Red Flags Terdeteksi:</span><strong id="resRedFlagCount" style="color: var(--accent-red);">0 Red Flag</strong></div>
+                </div>
+
+                <!-- Matrix Sensitivity Analysis -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h3 style="margin-bottom: 10px; font-size: 0.95rem; color: var(--accent-yellow);"><i class="fa-solid fa-table-cells"></i> Matrix Sensitivity Valuation (Pertumbuhan Laba)</h3>
+                    <table class="exit-table">
+                        <thead>
+                            <tr>
+                                <th>Skenario Growth</th>
+                                <th>Growth Rate</th>
+                                <th>Harga Wajar DCF</th>
+                                <th>Margin vs Harga Sekarang</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensitivityMatrixBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Position Sizing, Passive Income & DCA -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h3 style="margin-bottom: 10px; font-size: 0.95rem; color: var(--accent-yellow);"><i class="fa-solid fa-sack-dollar"></i> Position Sizing, Passive Income & DCA Simulator</h3>
+                    <div class="grid-metrics">
+                        <div class="metric-card">
+                            <h4>Max Alokasi Modal</h4>
+                            <div class="value" id="resAllocationNominal">Rp 0</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Est. Passive Income / Thn</h4>
+                            <div class="value" id="resPassiveIncome" style="color: var(--accent-green);">Rp 0</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Stop Loss Protection (-10%)</h4>
+                            <div class="value" id="resStopLoss" style="color: var(--accent-red);">Rp 0</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Kebutuhan DCA Averaging</h4>
+                            <div class="value" id="resDcaSharesNeed" style="color: var(--accent-yellow);">0 Lot</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Summary Notes -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);"><i class="fa-solid fa-list-check"></i> Poin Evaluasi Katalis & Risiko</h3>
+                    <ul class="analysis-list" id="analysisNotes"></ul>
+                </div>
+
+            </div>
+
+            <!-- Action Grid Buttons -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="action-grid">
+                    <button class="btn-action btn-copy" onclick="copyStockSummary()">
+                        <i class="fa-solid fa-copy"></i> Salin Resume
+                    </button>
+                    <button class="btn-action btn-wa" onclick="shareToWhatsApp()">
+                        <i class="fa-brands fa-whatsapp"></i> Share WA
+                    </button>
+                    <button class="btn-action btn-image" onclick="exportScorecardImage()">
+                        <i class="fa-solid fa-image"></i> Export Scorecard
+                    </button>
+                    <button class="btn-action btn-save" onclick="saveStockToHistory()">
+                        <i class="fa-solid fa-bookmark"></i> Simpan Watchlist
+                    </button>
+                </div>
+            </div>
+
         </div>
+
+        <!-- Comparison Watchlist Table -->
+        <div id="historySection" class="input-section" style="margin-top: 2rem; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.05rem; color: #fff;"><i class="fa-solid fa-list-check"></i> Watchlist Komparasi Saham Tersimpan</h3>
+                <button onclick="clearStockHistory()" style="background: var(--accent-red); color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
+                    <i class="fa-solid fa-trash"></i> Hapus Semua
+                </button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="exit-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Harga</th>
+                            <th>Val. Graham</th>
+                            <th>Val. DCF</th>
+                            <th>MoS (%)</th>
+                            <th>Skor Multibagger</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <div class="row">
-        <div class="col form-group">
-            <label>Harga Saat Ini</label>
-            <input type="number" id="hargaInput" placeholder="Harga Saham">
-        </div>
-        <div class="col form-group">
-            <label>EPS (Laba/Saham)</label>
-            <input type="number" id="epsInput" placeholder="EPS TTM">
-        </div>
-    </div>
+    <script>
+        let currentStockAnalysis = {};
 
-    <div class="row">
-        <div class="col form-group">
-            <label>BVPS (Nilai Buku/Saham)</label>
-            <input type="number" id="bvpsInput" placeholder="BVPS">
-        </div>
-        <div class="col form-group">
-            <label>Pertumbuhan Laba (%)</label>
-            <input type="number" id="profitGrowth" placeholder="Contoh: 35">
-        </div>
-    </div>
+        function calculateStockMaster() {
+            const isIDR = document.getElementById('pasarSelect').value === 'IDR';
+            const symbol = isIDR ? 'Rp ' : '$ ';
+            const lotMultiplier = isIDR ? 100 : 1;
 
-    <hr style="border:0; border-top: 1px solid #eee; margin: 15px 0;">
+            const ticker = document.getElementById('tickerInput').value.trim().toUpperCase() || 'SAHAM';
+            const sektor = document.getElementById('sektorSelect').value;
+            const harga = parseFloat(document.getElementById('hargaInput').value) || 0;
+            const eps = parseFloat(document.getElementById('epsInput').value) || 0;
+            const bvps = parseFloat(document.getElementById('bvpsInput').value) || 0;
+            const profitGrowth = parseFloat(document.getElementById('profitGrowth').value) || 0;
+            
+            const assetShare = parseFloat(document.getElementById('assetShareInput').value) || (bvps * 1.5);
+            const debtShare = parseFloat(document.getElementById('debtShareInput').value) || (bvps * 0.5);
+            const fcfShare = parseFloat(document.getElementById('fcfShareInput').value) || (eps * 0.9);
+            const dps = parseFloat(document.getElementById('dpsInput').value) || 0;
+            const userCapital = parseFloat(document.getElementById('userCapital').value) || 0;
 
-    <div class="form-group">
-        <label>Aksi Korporasi (Right Issue / Dilusi)</label>
-        <select id="rightIssue">
-            <option value="none">Tidak ada Right Issue / Issuance</option>
-            <option value="expansion">Right Issue untuk Ekspansi / Modal Kerja</option>
-            <option value="backdoor">Backdoor Listing / Standby Buyer Baru / SPAC</option>
-            <option value="debt">Right Issue untuk Bayar Utang (Risiko Dilusi)</option>
-        </select>
-    </div>
+            const currentAvgPrice = parseFloat(document.getElementById('currentAvgPrice').value) || 0;
+            const currentSharesCount = parseFloat(document.getElementById('currentSharesCount').value) || 0;
+            const targetAvgPrice = parseFloat(document.getElementById('targetAvgPrice').value) || 0;
 
-    <div class="form-group">
-        <label>Indikator Akuisisi / M&A / Spinoff</label>
-        <select id="acquisition">
-            <option value="none">Tidak ada Akuisisi / Spinoff</option>
-            <option value="small">Akuisisi Aset Skala Kecil/Menengah</option>
-            <option value="transformative">Akuisisi Strategis Transformatif (Turnaround)</option>
-        </select>
-    </div>
+            const rightIssue = document.getElementById('rightIssue').value;
+            const acquisition = document.getElementById('acquisition').value;
 
-    <button onclick="prosesAnalisis()">🔍 Hitung Valuasi & Potensi Multibagger</button>
+            if (harga <= 0 || eps <= 0 || bvps <= 0) {
+                alert("Harap masukkan Harga Saham, EPS, dan BVPS dengan angka positif!");
+                return;
+            }
 
-    <div id="hasil" class="result-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 id="sahamTitle" style="color: #0d6efd; margin:0;">-</h3>
-            <span id="hargaText" style="font-size: 16px; font-weight: bold;">-</span>
-        </div>
+            // 1. Valuation Calculations
+            const hargaWajarGraham = Math.sqrt(22.5 * eps * bvps);
+            const mosGraham = ((hargaWajarGraham - harga) / hargaWajarGraham) * 100;
+            const per = (harga / eps).toFixed(1);
+            const pbv = (harga / bvps).toFixed(1);
+            const roe = ((eps / bvps) * 100).toFixed(1);
+            const peg = profitGrowth > 0 ? (per / profitGrowth).toFixed(2) : 'N/A';
+            const divYield = ((dps / harga) * 100).toFixed(2);
 
-        <div class="grid">
-            <div class="card"><h4>Harga Wajar (Graham)</h4><div class="value" id="valGraham" style="color:#0d6efd;">-</div></div>
-            <div class="card"><h4>Margin of Safety (MoS)</h4><div class="value" id="valMoS">-</div></div>
-            <div class="card"><h4>PER / PBV</h4><div class="value" id="valPERPBV">-</div></div>
-            <div class="card"><h4>ROE Estimasi</h4><div class="value" id="valROE">-</div></div>
-        </div>
+            // Dividend Discount Model (DDM)
+            const reqReturn = 0.12;
+            const gDiv = Math.min(profitGrowth, 10) / 100;
+            let ddmValuation = 0;
+            if (dps > 0 && reqReturn > gDiv) {
+                const nextDps = dps * (1 + gDiv);
+                ddmValuation = nextDps / (reqReturn - gDiv);
+            }
 
-        <div id="statusKelayakan" class="valuation-box"></div>
-        
-        <div style="margin-top: 15px;">
-            <p style="font-size: 13px; font-weight: bold; margin-bottom: 5px;">Poin Evaluasi Katalis Multibagger:</p>
-            <ul class="analysis-list" id="analysisNotes"></ul>
-        </div>
-    </div>
-</div>
+            // DCF Function helper
+            function calcDCF(growthRate) {
+                let sum = 0;
+                let cFCF = fcfShare;
+                for (let i = 1; i <= 5; i++) {
+                    cFCF *= (1 + (Math.min(growthRate, 25) / 100));
+                    sum += cFCF / Math.pow(1.10, i);
+                }
+                const termVal = (cFCF * 1.03) / (0.10 - 0.03);
+                return sum + (termVal / Math.pow(1.10, 5));
+            }
 
-<script>
-    function prosesAnalisis() {
-        const ticker = document.getElementById('tickerInput').value.trim().toUpperCase() || 'SAHAM';
-        const mataUangSymbol = document.getElementById('pasarSelect').value === 'IDR' ? 'Rp ' : '$ ';
-        const harga = parseFloat(document.getElementById('hargaInput').value);
-        const eps = parseFloat(document.getElementById('epsInput').value);
-        const bvps = parseFloat(document.getElementById('bvpsInput').value);
-        const profitGrowth = parseFloat(document.getElementById('profitGrowth').value) || 0;
-        const rightIssue = document.getElementById('rightIssue').value;
-        const acquisition = document.getElementById('acquisition').value;
+            const dcfIntrinsicValue = calcDCF(profitGrowth);
 
-        if (!harga || !eps || !bvps || harga <= 0 || eps <= 0 || bvps <= 0) {
-            alert('Harap masukkan Harga Saham, EPS, dan BVPS dengan angka positif!');
-            return;
+            // Matrix Sensitivity Render
+            const sensitivityBody = document.getElementById('sensitivityMatrixBody');
+            sensitivityBody.innerHTML = '';
+            const matrixRates = [
+                { name: 'Bearish Case', rate: 5 },
+                { name: 'Base Case', rate: Math.max(10, profitGrowth) },
+                { name: 'Bullish Case', rate: Math.max(20, profitGrowth + 5) }
+            ];
+
+            matrixRates.forEach(item => {
+                const valDCF = calcDCF(item.rate);
+                const margin = ((valDCF - harga) / valDCF) * 100;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.rate}% / thn</td>
+                    <td style="color: var(--accent-green); font-weight: 600;">${symbol}${Math.round(valDCF).toLocaleString('id-ID')}</td>
+                    <td style="color: ${margin >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; font-weight: 600;">${margin.toFixed(1)}%</td>
+                `;
+                sensitivityBody.appendChild(tr);
+            });
+
+            // 2. Dynamic Bar Colors & Widths
+            const maxVal = Math.max(harga, hargaWajarGraham, dcfIntrinsicValue, ddmValuation) * 1.1;
+            const pctPrice = Math.min(100, (harga / maxVal) * 100);
+            const pctGraham = Math.min(100, (hargaWajarGraham / maxVal) * 100);
+            const pctDCF = Math.min(100, (dcfIntrinsicValue / maxVal) * 100);
+
+            const barPriceElem = document.getElementById('barPrice');
+            const zoneText = document.getElementById('zoneIndicatorText');
+
+            if (harga <= hargaWajarGraham) {
+                barPriceElem.style.background = "var(--accent-green)";
+                zoneText.innerText = "UNDERVALUED ZONE 🚀 (DISCOUNT DEAL)";
+                zoneText.style.color = "var(--accent-green)";
+            } else {
+                barPriceElem.style.background = "var(--accent-red)";
+                zoneText.innerText = "OVERVALUED ZONE ⚠️ (PREMIUM PRICE)";
+                zoneText.style.color = "var(--accent-red)";
+            }
+
+            barPriceElem.style.width = pctPrice + "%";
+            document.getElementById('barGraham').style.width = pctGraham + "%";
+            document.getElementById('barDCF').style.width = pctDCF + "%";
+
+            document.getElementById('lblBarPrice').innerText = symbol + harga.toLocaleString('id-ID');
+            document.getElementById('lblBarGraham').innerText = symbol + Math.round(hargaWajarGraham).toLocaleString('id-ID');
+            document.getElementById('lblBarDCF').innerText = symbol + Math.round(dcfIntrinsicValue).toLocaleString('id-ID');
+
+            if (ddmValuation > 0) {
+                const pctDDM = Math.min(100, (ddmValuation / maxVal) * 100);
+                document.getElementById('barDDM').style.width = pctDDM + "%";
+                document.getElementById('lblBarDDM').innerText = symbol + Math.round(ddmValuation).toLocaleString('id-ID');
+                document.getElementById('barDdmGroup').style.display = 'block';
+            } else {
+                document.getElementById('barDdmGroup').style.display = 'none';
+            }
+
+            // 3. DCA / Averaging Down
+            let dcaResultText = "N/A";
+            if (currentAvgPrice > 0 && currentSharesCount > 0 && targetAvgPrice > 0 && targetAvgPrice < currentAvgPrice && targetAvgPrice > harga) {
+                const sharesOld = currentSharesCount * lotMultiplier;
+                const sharesNeed = sharesOld * (currentAvgPrice - targetAvgPrice) / (targetAvgPrice - harga);
+                const lotsNeed = (sharesNeed / lotMultiplier).toFixed(1);
+                const capitalNeed = sharesNeed * harga;
+                dcaResultText = `${lotsNeed} ${isIDR ? 'Lot' : 'Lembar'} (${symbol}${Math.round(capitalNeed/1000000).toFixed(1)} Jt)`;
+            } else {
+                dcaResultText = "Tidak Perlu DCA";
+            }
+
+            // 4. Health & Solvency
+            const equityShare = assetShare - debtShare;
+            const der = equityShare > 0 ? (debtShare / equityShare).toFixed(2) : ' High ';
+            
+            const x1 = (assetShare - debtShare) / assetShare;
+            const x2 = eps / assetShare;
+            const x3 = (eps * 1.2) / assetShare;
+            const x4 = (bvps) / debtShare;
+            const zScore = (1.2 * x1 + 1.4 * x2 + 3.3 * x3 + 0.6 * x4).toFixed(2);
+
+            let redFlags = 0;
+            let notes = [];
+            if (document.getElementById('rfPiutang').checked) { redFlags++; notes.push("Red Flag: Piutang membesar tak seimbang dengan omzet."); }
+            if (document.getElementById('rfOpCash').checked) { redFlags++; notes.push("Red Flag: Operating Cash Flow negatif."); }
+            if (document.getElementById('rfInsiderSelling').checked) { redFlags++; notes.push("Red Flag: Direksi / Insider gencar jualan saham."); }
+
+            let piotroskiScore = 3;
+            if (roe > 10) piotroskiScore++;
+            if (fcfShare > 0) piotroskiScore++;
+            if (document.getElementById('flagPiotroskiProf').checked) piotroskiScore++;
+            if (document.getElementById('flagPiotroskiLev').checked) piotroskiScore++;
+            piotroskiScore = Math.min(piotroskiScore, 9);
+
+            // Multibagger Scoring Engine
+            let score = 0;
+            if (mosGraham >= 20) { score += 20; notes.push("Valuasi Graham sangat murah (Margin of Safety > 20%)."); }
+            else if (mosGraham > 0) { score += 10; notes.push("Valuasi berada di bawah harga wajar Graham."); }
+
+            if (profitGrowth >= 50) { score += 30; notes.push(`Hyper Growth: Pertumbuhan laba masif (${profitGrowth}%).`); }
+            else if (profitGrowth >= 20) { score += 20; notes.push(`Pertumbuhan laba sehat (${profitGrowth}%).`); }
+
+            if (rightIssue === 'backdoor') { score += 30; notes.push("Katalis Sangat Kuat: Right Issue Backdoor Listing / Investor Strategis."); }
+            else if (rightIssue === 'expansion') { score += 15; notes.push("Katalis Positif: Right Issue untuk ekspansi."); }
+            else if (rightIssue === 'debt') { score -= 10; notes.push("Risiko Dilusi: Right Issue untuk bayar utang."); }
+
+            if (acquisition === 'transformative') { score += 20; notes.push("Katalis Transformatif: Akuisisi besar (Turnaround)."); }
+
+            score -= (redFlags * 15);
+            score = Math.max(0, Math.min(100, score));
+
+            // Position Sizing & Passive Income
+            let allocPct = 0;
+            if (score >= 70 && redFlags === 0) allocPct = 20;
+            else if (score >= 50 && redFlags <= 1) allocPct = 10;
+            else allocPct = 5;
+
+            const allocNominal = (userCapital * allocPct / 100);
+            const estPassiveIncome = (allocNominal * (divYield / 100));
+            const stopLossPrice = harga * 0.90;
+
+            // UI Render
+            const banner = document.getElementById('decisionBanner');
+            if (score >= 65 && redFlags === 0) {
+                banner.className = "decision-banner banner-go";
+                banner.innerHTML = `<i class="fa-solid fa-circle-check"></i> HIGH CONVICTION DEAL (Potensi Multibagger Tinggi - Skor: ${score}/100)`;
+            } else if (score >= 40) {
+                banner.className = "decision-banner banner-warning";
+                banner.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> WATCHLIST / MODERATE DEAL (Skor: ${score}/100)`;
+            } else {
+                banner.className = "decision-banner banner-nogo";
+                banner.innerHTML = `<i class="fa-solid fa-ban"></i> HIGH RISK / NOT RECOMMENDED (Skor: ${score}/100)`;
+            }
+
+            document.getElementById('resPrice').innerText = symbol + harga.toLocaleString('id-ID');
+            document.getElementById('resGraham').innerText = symbol + Math.round(hargaWajarGraham).toLocaleString('id-ID');
+            document.getElementById('resDCF').innerText = symbol + Math.round(dcfIntrinsicValue).toLocaleString('id-ID');
+            document.getElementById('resDDM').innerText = ddmValuation > 0 ? (symbol + Math.round(ddmValuation).toLocaleString('id-ID')) : 'N/A';
+            document.getElementById('resMoS').innerText = mosGraham.toFixed(1) + "%";
+            document.getElementById('resPEGDiv').innerText = `${peg}x / ${divYield}%`;
+
+            const sektorLabels = { general: 'Umum', banking: 'Perbankan', consumer: 'Consumer', tech: 'Teknologi' };
+            document.getElementById('resSektorName').innerText = sektorLabels[sektor] || 'Umum';
+
+            document.getElementById('resDER').innerText = der + "x";
+            document.getElementById('resPiotroski').innerText = `${piotroskiScore}/9`;
+            document.getElementById('resMultiRatio').innerText = `${per}x / ${pbv}x / ${roe}%`;
+            document.getElementById('resRedFlagCount').innerText = `${redFlags} Red Flag`;
+
+            const altmanBadge = document.getElementById('resAltmanBadge');
+            if (zScore > 2.9) {
+                altmanBadge.className = "badge badge-cuan";
+                altmanBadge.innerText = `Safe Zone (Z=${zScore})`;
+            } else if (zScore >= 1.8) {
+                altmanBadge.className = "badge badge-warning";
+                altmanBadge.innerText = `Grey Zone (Z=${zScore})`;
+            } else {
+                altmanBadge.className = "badge badge-danger";
+                altmanBadge.innerText = `Distress Zone (Z=${zScore})`;
+            }
+
+            document.getElementById('resAllocationNominal').innerText = symbol + allocNominal.toLocaleString('id-ID');
+            document.getElementById('resPassiveIncome').innerText = symbol + Math.round(estPassiveIncome).toLocaleString('id-ID');
+            document.getElementById('resStopLoss').innerText = symbol + Math.round(stopLossPrice).toLocaleString('id-ID');
+            document.getElementById('resDcaSharesNeed').innerText = dcaResultText;
+
+            const notesUl = document.getElementById('analysisNotes');
+            notesUl.innerHTML = '';
+            notes.forEach(n => {
+                let li = document.createElement('li');
+                li.textContent = n;
+                notesUl.appendChild(li);
+            });
+
+            currentStockAnalysis = {
+                ticker,
+                harga: symbol + harga.toLocaleString('id-ID'),
+                graham: symbol + Math.round(hargaWajarGraham).toLocaleString('id-ID'),
+                dcf: symbol + Math.round(dcfIntrinsicValue).toLocaleString('id-ID'),
+                mos: mosGraham.toFixed(1) + "%",
+                zScore,
+                score
+            };
+
+            document.getElementById('resultsArea').style.display = 'grid';
+            document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 1. Kalkulasi Valuasi Graham
-        const hargaWajar = Math.sqrt(22.5 * eps * bvps);
-        const mos = ((hargaWajar - harga) / hargaWajar) * 100;
-        const per = (harga / eps).toFixed(1);
-        const pbv = (harga / bvps).toFixed(1);
-        const roe = ((eps / bvps) * 100).toFixed(1);
+        function getFormattedTextSummary() {
+            return `📊 *NEMU STOCK RESUME ANALISIS*
+━━━━━━━━━━━━━━━━━━
+• *Ticker:* ${currentStockAnalysis.ticker}
+• *Harga Pasar:* ${currentStockAnalysis.harga}
+• *Valuasi Graham:* ${currentStockAnalysis.graham} (MoS: ${currentStockAnalysis.mos})
+• *Valuasi DCF:* ${currentStockAnalysis.dcf}
+• *Altman Z-Score:* ${currentStockAnalysis.zScore}
+• *Skor Multibagger:* ${currentStockAnalysis.score}/100
 
-        // 2. Skoring Indikator Multibagger (Ala Andry Hakim)
-        let score = 0;
-        let notes = [];
-
-        if (mos >= 20) {
-            score += 20;
-            notes.push("Valuasi sangat murah (Margin of Safety tebal > 20%).");
-        } else if (mos > 0) {
-            score += 10;
-            notes.push("Valuasi berada di bawah harga wajar (Undervalued).");
-        } else {
-            notes.push("Valuasi sudah tergolong mahal (Overvalued dibanding Graham Value).");
+_Dianalisis menggunakan NEMU Stock Master Investor Suite_`;
         }
 
-        if (profitGrowth >= 50) {
-            score += 30;
-            notes.push(`Pertumbuhan laba sangat masif (${profitGrowth}%), mengindikasikan Hyper Growth.`);
-        } else if (profitGrowth >= 20) {
-            score += 20;
-            notes.push(`Pertumbuhan laba tergolong sehat (${profitGrowth}%).`);
-        } else if (profitGrowth > 0) {
-            score += 5;
-            notes.push(`Laba tumbuh lambat (${profitGrowth}%).`);
-        } else {
-            notes.push("Laba stagnan atau negatif.");
+        function copyStockSummary() {
+            if (!currentStockAnalysis.ticker) return;
+            navigator.clipboard.writeText(getFormattedTextSummary()).then(() => {
+                alert("Resume analisis saham berhasil disalin!");
+            });
         }
 
-        if (rightIssue === 'backdoor') {
-            score += 30;
-            notes.push("Katalis Sangat Kuat: Right Issue Backdoor Listing / Masuknya Investor Strategis Baru.");
-        } else if (rightIssue === 'expansion') {
-            score += 15;
-            notes.push("Katalis Positif: Right Issue digunakan untuk ekspansi bisnis.");
-        } else if (rightIssue === 'debt') {
-            score -= 10;
-            notes.push("Risiko Dilusi: Right Issue hanya untuk bayar utang.");
+        function shareToWhatsApp() {
+            if (!currentStockAnalysis.ticker) return;
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(getFormattedTextSummary())}`;
+            window.open(url, '_blank');
         }
 
-        if (acquisition === 'transformative') {
-            score += 20;
-            notes.push("Katalis Transformatif: Akuisisi strategis yang berpotensi melipatgandakan omzet.");
-        } else if (acquisition === 'small') {
-            score += 10;
-            notes.push("Akuisisi skala kecil memberikan pertumbuhan anorganik.");
+        function exportScorecardImage() {
+            const card = document.getElementById('exportScorecardCard');
+            html2canvas(card, { backgroundColor: '#0f172a' }).then(canvas => {
+                const a = document.createElement('a');
+                a.download = `NEMU_Stock_${currentStockAnalysis.ticker || 'Scorecard'}.png`;
+                a.href = canvas.toDataURL();
+                a.click();
+            });
         }
 
-        // Display Hasil
-        document.getElementById('sahamTitle').innerText = ticker;
-        document.getElementById('hargaText').innerText = mataUangSymbol + harga.toLocaleString('id-ID');
-        document.getElementById('valGraham').innerText = mataUangSymbol + Math.round(hargaWajar).toLocaleString('id-ID');
-        document.getElementById('valMoS').innerText = mos.toFixed(1) + "%";
-        document.getElementById('valPERPBV').innerText = `${per}x / ${pbv}x`;
-        document.getElementById('valROE').innerText = `${roe}%`;
-
-        const statusBox = document.getElementById('statusKelayakan');
-        let badgeHtml = "";
-        if (score >= 65) {
-            badgeHtml = `<br><span class="badge high">POTENSI MULTIBAGGER TINGGI 🚀 (Skor: ${score}/100)</span>`;
-        } else if (score >= 40) {
-            badgeHtml = `<br><span class="badge medium">POTENSI SEDANG / WATCHLIST ⚠️ (Skor: ${score}/100)</span>`;
-        } else {
-            badgeHtml = `<br><span class="badge low">POTENSI LOW / RISIKO TINGGI ❌ (Skor: ${score}/100)</span>`;
+        function saveStockToHistory() {
+            if (!currentStockAnalysis.ticker) return;
+            let history = JSON.parse(localStorage.getItem('nemu_stock_history') || '[]');
+            history.push(currentStockAnalysis);
+            localStorage.setItem('nemu_stock_history', JSON.stringify(history));
+            renderStockHistory();
+            alert("Saham berhasil disimpan ke Watchlist!");
         }
 
-        if (mos >= 10) {
-            statusBox.className = "valuation-box layak";
-            statusBox.innerHTML = `💡 <b>UNDERVALUED (DISCOUNT)</b><br>Harga pasar (${mataUangSymbol}${harga.toLocaleString('id-ID')}) berada di bawah Harga Wajar Graham (${mataUangSymbol}${Math.round(hargaWajar).toLocaleString('id-ID')}).${badgeHtml}`;
-        } else {
-            statusBox.className = "valuation-box tidak-layak";
-            statusBox.innerHTML = `⚠️ <b>OVERVALUED / FAIR VALUE</b><br>Harga pasar mendekati atau melebihi estimasi harga wajarnya.${badgeHtml}`;
+        function renderStockHistory() {
+            let history = JSON.parse(localStorage.getItem('nemu_stock_history') || '[]');
+            if (history.length === 0) {
+                document.getElementById('historySection').style.display = 'none';
+                return;
+            }
+
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            history.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.ticker}</strong></td>
+                    <td>${item.harga}</td>
+                    <td style="color: var(--primary);">${item.graham}</td>
+                    <td style="color: var(--accent-green);">${item.dcf}</td>
+                    <td style="color: var(--accent-green);">${item.mos}</td>
+                    <td style="color: var(--accent-yellow); font-weight:700;">${item.score}/100</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('historySection').style.display = 'block';
         }
 
-        const analysisNotes = document.getElementById('analysisNotes');
-        analysisNotes.innerHTML = '';
-        notes.forEach(note => {
-            let li = document.createElement('li');
-            li.textContent = note;
-            analysisNotes.appendChild(li);
-        });
+        function clearStockHistory() {
+            if (confirm("Hapus seluruh Watchlist tersimpan?")) {
+                localStorage.removeItem('nemu_stock_history');
+                renderStockHistory();
+            }
+        }
 
-        document.getElementById('hasil').style.display = 'block';
-    }
-</script>
-
+        window.onload = renderStockHistory;
+    </script>
 </body>
 </html>
